@@ -2,12 +2,11 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
 import Footer from "../components/Footer";
 import { supabaseFetch } from "../../services/supabaseService";
+import RegistrationForm from "../components/RegistrationForm";
 
 export default function EventPage() {
   const { eventId } = useParams();
   const [event, setEvent] = useState(null);
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
 
   useEffect(() => {
     async function getEvent() {
@@ -17,11 +16,6 @@ export default function EventPage() {
 
     getEvent();
   }, [eventId]);
-
-  async function handleSubmit(eventSubmit) {
-    eventSubmit.preventDefault();
-    console.log({ name, email, event: event.title });
-  }
 
   if (!event) {
     return null;
@@ -80,32 +74,7 @@ export default function EventPage() {
           </div>
         </section>
 
-        <section className="signup-panel">
-          <div>
-            <p className="eyebrow dark">Tilmelding</p>
-            <h2>Reserver din plads</h2>
-            <p>
-              Udfyld formularen, så sender vi din tilmelding til arrangøren.
-            </p>
-          </div>
-
-          <form onSubmit={handleSubmit}>
-            <label>
-              Navn
-              <input
-                value={name}
-                onChange={(inputEvent) => setName(inputEvent.target.value)}
-              />
-            </label>
-            <span>E-mail</span>
-            <input
-              value={email}
-              onChange={(inputEvent) => setEmail(inputEvent.target.value)}
-              placeholder="dig@example.com"
-            />
-            <button type="submit">Tilmeld mig</button>
-          </form>
-        </section>
+        <RegistrationForm event={event} />
       </main>
       <Footer />
     </>
