@@ -1,12 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
 import Footer from "../components/Footer";
-
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const headers = {
-  apikey: import.meta.env.VITE_SUPABASE_APIKEY,
-  "Content-Type": "application/json",
-};
+import { supabaseFetch } from "../../services/supabaseService";
 
 export default function EventPage() {
   const { eventId } = useParams();
@@ -16,10 +11,7 @@ export default function EventPage() {
 
   useEffect(() => {
     async function getEvent() {
-      const response = await fetch(`${SUPABASE_URL}/events?id=eq.${eventId}`, {
-        headers,
-      });
-      const data = await response.json();
+      const data = await supabaseFetch(`events?id=eq.${eventId}`);
       setEvent(data[0]);
     }
 
