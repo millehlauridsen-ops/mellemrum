@@ -45,12 +45,12 @@ export default function HomePage() {
   return (
     <>
       <header className="hero">
-        <p className="eyebrow">Kultur i Aarhus</p>
+        <h3 className="eyebrow">Kultur i Aarhus</h3>
         <h1>Find plads til noget nyt.</h1>
-        <p className="hero-copy">
+        <h2 className="hero-subheading">
           Koncerter, talks og workshops samlet ét sted. Find dit næste event, og
           tilmeld dig på få minutter.
-        </p>
+        </h2>
         <a className="hero-link" href="#events">
           Se kommende events ↓
         </a>
@@ -59,10 +59,12 @@ export default function HomePage() {
       <main id="events">
         <section className="section-heading">
           <div>
-            <p className="eyebrow dark">Det sker</p>
+            <h3 className="eyebrow dark">Det sker</h3>
             <h2>Kommende events</h2>
           </div>
-          <p>Kuraterede oplevelser i byen – fra små scener til store idéer.</p>
+          <h3>
+            Kuraterede oplevelser i byen – fra små scener til store idéer.
+          </h3>
         </section>
 
         <section className="filters">
