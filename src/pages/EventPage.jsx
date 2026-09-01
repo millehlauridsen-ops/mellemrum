@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link, useParams } from "react-router";
 import Footer from "../components/Footer";
 import { supabaseFetch } from "../../services/supabaseService";
@@ -7,6 +7,11 @@ import RegistrationForm from "../components/RegistrationForm";
 export default function EventPage() {
   const { eventId } = useParams();
   const [event, setEvent] = useState(null);
+  const headingRef = useRef(null);
+
+  useEffect(() => {
+    headingRef.current?.focus();
+  }, [event.id]);
 
   useEffect(() => {
     async function getEvent() {
