@@ -130,15 +130,15 @@ select {
 
 .hero h1,
 .page-header h1 {
-  font-size: clamp(3.2rem, 8vw, 7.5rem);
-  letter-spacing: -0.075em;
+  font-size: clamp(3rem, 8vw, 7.5rem);
+  letter-spacing: -0.065rem;
   line-height: 0.9;
   margin: 0;
-  max-width: 12ch;
+  max-width: 15ch;
 }
 
-.hero-copy {
-  color: rgba(255, 255, 255, 0.76);
+.hero-subheading {
+  color: rgba(255, 255, 255, 1);
   font-size: clamp(1.1rem, 2vw, 1.4rem);
   line-height: 1.55;
   margin: 2rem 0;
@@ -174,19 +174,25 @@ main {
   margin-bottom: 2.5rem;
 }
 
+.section-subheading {
+  color: #757575;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
 .section-heading h2,
 .signup-panel h2,
 .narrow-page h2 {
   font-size: clamp(2.2rem, 4vw, 4rem);
-  letter-spacing: -0.055em;
+  letter-spacing: -0.04em;
   line-height: 1;
   margin: 0;
 }
 
-.section-heading > p {
+.section-heading > h3 {
   color: #53605b;
   margin: 0;
-  max-width: 30rem;
+  font-size: 1.1rem;
 }
 
 .filters {

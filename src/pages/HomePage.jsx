@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router";
 import Footer from "../components/Footer";
 import { supabaseFetch } from "../../services/supabaseService";
 
 export default function HomePage() {
+  const headingRef = useRef(null);
   const [events, setEvents] = useState([]);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("Alle");
@@ -11,7 +12,10 @@ export default function HomePage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    headingRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
     async function getEvents() {
       try {
         setIsLoading(true);
@@ -68,15 +72,14 @@ export default function HomePage() {
   return (
     <>
       <header className="hero">
-        <h2 className="eyebrow">Kultur i Aarhus</h2>
-
-        <h1>Find plads til noget nyt.</h1>
-
-        <h3 className="hero-copy">
+        <h3 className="eyebrow">Kultur i Aarhus</h3>
+        <h1 ref={headingRef} tabIndex={-1}>
+          Find plads til noget nyt.
+        </h1>
+        <h2 className="hero-subheading">
           Koncerter, talks og workshops samlet ét sted. Find dit næste event, og
           tilmeld dig på få minutter.
-        </h3>
-
+        </h2>
         <a className="hero-link" href="#events">
           Se kommende events ↓
         </a>
@@ -85,11 +88,12 @@ export default function HomePage() {
       <main id="events">
         <section className="section-heading">
           <div>
-            <p className="eyebrow dark">Det sker</p>
+            <h3 className="eyebrow dark">Det sker</h3>
             <h2>Kommende events</h2>
           </div>
-
-          <p>Kuraterede oplevelser i byen – fra små scener til store idéer.</p>
+          <h3>
+            Kuraterede oplevelser i byen – fra små scener til store idéer.
+          </h3>
         </section>
 
         <section className="filters">
