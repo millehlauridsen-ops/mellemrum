@@ -670,3 +670,39 @@ select:focus {
     gap: 0.4rem;
   }
 }
+
+.error-message,
+.empty-message,
+.status-message {
+  width: 100%;
+  margin: 2rem 0;
+  padding: 2rem;
+  text-align: center;
+  border-radius: 12px;
+}
+
+.error-message {
+  color: #7a1f1f;
+  background-color: #fce8e8;
+  border: 1px solid #e5aaaa;
+}
+
+.error-message h3,
+.empty-message h3 {
+  margin: 0 0 0.5rem;
+}
+
+.error-message p,
+.empty-message p {
+  margin: 0;
+}
+
+.empty-message {
+  background-color: #f3f0ea;
+  border: 1px solid #d7d1c7;
+}
+
+.status-message {
+  color: #555;
+  background-color: #f3f0ea;
+}
