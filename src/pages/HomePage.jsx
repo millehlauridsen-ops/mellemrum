@@ -1,12 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router";
 import Footer from "../components/Footer";
 import { supabaseFetch } from "../../services/supabaseService";
 
 export default function HomePage() {
+  const headingRef = useRef(null);
   const [events, setEvents] = useState([]);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("Alle");
+
+  useEffect(() => {
+    headingRef.current?.focus();
+  }, []);
 
   useEffect(() => {
     async function getEvents() {
@@ -46,7 +51,9 @@ export default function HomePage() {
     <>
       <header className="hero">
         <h3 className="eyebrow">Kultur i Aarhus</h3>
-        <h1>Find plads til noget nyt.</h1>
+        <h1 ref={headingRef} tabIndex={-1}>
+          Find plads til noget nyt.
+        </h1>
         <h2 className="hero-subheading">
           Koncerter, talks og workshops samlet ét sted. Find dit næste event, og
           tilmeld dig på få minutter.
