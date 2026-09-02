@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router";
 import Footer from "../components/Footer";
 import { supabaseFetch } from "../../services/supabaseService";
@@ -6,21 +6,68 @@ import RegistrationForm from "../components/RegistrationForm";
 
 export default function EventPage() {
   const { eventId } = useParams();
+
   const [event, setEvent] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+
   const headingRef = useRef(null);
 
   useEffect(() => {
-    headingRef.current?.focus();
-  }, [event.id]);
+    if (event) {
+      headingRef.current?.focus();
+    }
+  }, [event]);
 
   useEffect(() => {
     async function getEvent() {
-      const data = await supabaseFetch(`events?id=eq.${eventId}`);
-      setEvent(data[0]);
+      try {
+        setIsLoading(true);
+        setError("");
+
+        const data = await supabaseFetch(
+          `events?id=eq.${eventId}&select=*,venue:venues(*)`,
+        );
+
+        if (!data.length) {
+          setError("Eventet kunne ikke findes.");
+          return;
+        }
+
+        setEvent(data[0]);
+      } catch (error) {
+        console.error("Error loading event:", error);
+        setError("Vi kunne desværre ikke hente eventet. Prøv igen senere.");
+      } finally {
+        setIsLoading(false);
+      }
     }
 
     getEvent();
   }, [eventId]);
+
+  if (isLoading) {
+    return <p className="status-message">Henter event...</p>;
+  }
+
+  if (error) {
+    return (
+      <>
+        <main className="event-page">
+          <Link className="back-link" to="/">
+            ← Alle events
+          </Link>
+
+          <div className="error-message" role="alert">
+            <h1>Der opstod en fejl</h1>
+            <p>{error}</p>
+          </div>
+        </main>
+
+        <Footer />
+      </>
+    );
+  }
 
   if (!event) {
     return null;
@@ -36,11 +83,20 @@ export default function EventPage() {
         </Link>
 
         <section className="event-detail">
-          <img src={event.image} alt="" />
+          <img
+            ref={headingRef}
+            tabIndex={-1}
+            src={event.image}
+            alt={event.title}
+          />
+
           <div className="event-detail-content">
             <p className="event-category">{event.category}</p>
+
             <h1>{event.title}</h1>
+
             <p className="lead">{event.summary}</p>
+
             <div className="detail-list">
               <p>
                 <strong>Dato</strong>
@@ -55,32 +111,55 @@ export default function EventPage() {
                   minute: "2-digit",
                 })}
               </p>
+
               <p>
                 <strong>Sted</strong>
+
                 <span>
-                  {event.venueName}
-                  <br />
-                  {event.venueAddress}, {event.venuePostalCode}{" "}
-                  {event.venueCity}
-                  {event.venueWebsite && (
+                  {event.venue?.name ?? "Sted ikke angivet"}
+
+                  {event.venue?.address && (
                     <>
                       <br />
-                      <a href={event.venueWebsite}>Besøg venue</a>
+                      {event.venue.address}
+                    </>
+                  )}
+
+                  {event.venue?.postalCode && (
+                    <>
+                      <br />
+                      {event.venue.postalCode} {event.venue.city}
+                    </>
+                  )}
+
+                  {event.venue?.website && (
+                    <>
+                      <br />
+                      <a
+                        href={event.venue.website}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Besøg venue
+                      </a>
                     </>
                   )}
                 </span>
               </p>
+
               <p>
                 <strong>Pris</strong>
                 {event.price === 0 ? "Gratis" : `${event.price} kr.`}
               </p>
             </div>
+
             <p>{event.description}</p>
           </div>
         </section>
 
         <RegistrationForm event={event} />
       </main>
+
       <Footer />
     </>
   );

@@ -154,7 +154,7 @@ export default function HomePage() {
 
                     <div className="event-meta">
                       <span>{formatEventDate(event.date)}</span>
-                      <span>{event.venue?.name ?? "Sted ikke angivet"}</span>
+                      <span>{event.venue.name ?? "Sted ikke angivet"}</span>
                     </div>
 
                     <div className="card-link">
