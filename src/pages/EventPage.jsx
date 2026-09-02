@@ -26,7 +26,7 @@ export default function EventPage() {
         setError("");
 
         const data = await supabaseFetch(
-          `events?id=eq.${eventId}&select=*,venue:venues(*)`,
+          `events?id=eq.${eventId}&select=*,venue:venues(id,name,address,postalCode,city,website)`,
         );
 
         if (!data.length) {
