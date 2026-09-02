@@ -242,6 +242,10 @@ select:focus {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.grid-card-link {
+  text-decoration: none;
+}
+
 .event-card {
   background: white;
   border: 1px solid var(--line);
@@ -313,7 +317,7 @@ select:focus {
   font-size: 0.88rem;
   font-weight: 750;
   margin-top: 1rem;
-  padding: 0.7rem 1rem;
+  padding: 0.2rem 1rem;
   text-decoration: none;
   transition:
     background 160ms ease,

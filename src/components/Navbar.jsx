@@ -3,9 +3,10 @@ import { NavLink } from "react-router";
 export default function Navbar() {
   return (
     <nav className="site-nav">
-      <NavLink className="brand" to="/">
+      <a className="brand" href={import.meta.env.BASE_URL}>
         mellemrum<span>.</span>
-      </NavLink>
+      </a>
+
       <div className="nav-links">
         <NavLink to="/">Events</NavLink>
         <NavLink to="/om">Om Mellemrum</NavLink>

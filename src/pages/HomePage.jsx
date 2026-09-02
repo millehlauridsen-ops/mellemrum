@@ -143,7 +143,11 @@ export default function HomePage() {
         {!isLoading && !error && filteredEvents.length > 0 && (
           <section className="event-grid">
             {filteredEvents.map((event) => (
-              <Link key={event.id} to={`/events/${event.id}`}>
+              <Link
+                className="grid-card-link"
+                key={event.id}
+                to={`/events/${event.id}`}
+              >
                 <article className="event-card">
                   <img src={event.image} alt={event.title} />
 
