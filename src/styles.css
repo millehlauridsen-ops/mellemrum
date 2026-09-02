@@ -486,7 +486,16 @@ select:focus {
   border-bottom: 1px solid var(--line);
   display: grid;
   gap: 1rem;
-  grid-template-columns: 1.2fr 1.5fr 0.7fr 0.5fr;
+  grid-template-columns: 1.2fr 1.5fr 0.7fr 0.5fr 0.1fr;
+  padding: 1rem 1.2rem;
+}
+
+.registration-list-row {
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1.08fr 1.39fr 0.7fr 0.5fr;
   padding: 1rem 1.2rem;
 }
 
@@ -513,13 +522,56 @@ select:focus {
 }
 
 .status {
-  background: #dff3cc;
+  border: none;
   border-radius: 999px;
   display: inline-block;
+  font-family: inherit;
   font-size: 0.75rem;
   font-weight: 750;
   padding: 0.35rem 0.6rem;
   text-align: center;
+}
+
+.status-new {
+  background: #f8e7a1;
+  color: #654f00;
+  cursor: pointer;
+}
+
+.status-new:hover {
+  background: #f2d66f;
+}
+
+.status-confirmed {
+  background: #dff3cc;
+  color: #245b24;
+  cursor: default;
+}
+
+.status:disabled {
+  opacity: 1;
+}
+.delete-button {
+  width: fit-content;
+  padding: 0.35rem 0.6rem;
+  color: #842323;
+  background: #f7d6d6;
+  border: none;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 750;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.delete-button:hover {
+  background: #efb7b7;
+}
+
+.delete-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
 }
 
 .not-found-title {

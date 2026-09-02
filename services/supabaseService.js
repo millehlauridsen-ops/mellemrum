@@ -32,3 +32,33 @@ export async function supabaseInsert(endpoint, data) {
     throw new Error(error || `Request failed: ${response.status}`);
   }
 }
+
+export async function supabaseUpdate(endpoint, data) {
+  const response = await fetch(`${SUPABASE_URL}/${endpoint}`, {
+    method: "PATCH",
+    headers: {
+      ...headers,
+      Prefer: "return=representation",
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(error || `Request failed: ${response.status}`);
+  }
+
+  return response.json();
+}
+
+export async function supabaseDelete(endpoint) {
+  const response = await fetch(`${SUPABASE_URL}/${endpoint}`, {
+    method: "DELETE",
+    headers,
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(error || `Request failed: ${response.status}`);
+  }
+}
