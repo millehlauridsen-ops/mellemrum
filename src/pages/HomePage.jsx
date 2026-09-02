@@ -21,7 +21,9 @@ export default function HomePage() {
         setIsLoading(true);
         setError("");
 
-        const data = await supabaseFetch("events?select=*,venue:venues(*)");
+        const data = await supabaseFetch(
+          "events?select=*,venue:venues(id,name)",
+        );
 
         setEvents(data);
       } catch (error) {

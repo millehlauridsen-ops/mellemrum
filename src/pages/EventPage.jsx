@@ -26,7 +26,7 @@ export default function EventPage() {
         setError("");
 
         const data = await supabaseFetch(
-          `events?id=eq.${eventId}&select=*,venue:venues(*)`,
+          `events?id=eq.${eventId}&select=*,venue:venues(id,name,address,postalcode,city,website)`,
         );
 
         if (!data.length) {
@@ -125,10 +125,10 @@ export default function EventPage() {
                     </>
                   )}
 
-                  {event.venue?.postalCode && (
+                  {event.venue?.postalcode && (
                     <>
                       <br />
-                      {event.venue.postalCode} {event.venue.city}
+                      {event.venue.postalcode} {event.venue.city}
                     </>
                   )}
 
