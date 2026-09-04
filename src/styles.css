@@ -573,6 +573,30 @@ textarea:focus {
   grid-column: 1 / -1;
 }
 
+.new-venue-fields {
+  min-width: 0;
+  margin: 0;
+  padding: 1.25rem;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+.new-venue-fields legend {
+  padding: 0 0.5rem;
+  color: var(--green);
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.new-venue-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
 .event-form-submit {
   justify-self: start;
   min-height: 50px;
@@ -782,6 +806,32 @@ textarea:focus {
   border-radius: 0.75rem;
 }
 
+.registration-table-all th:nth-child(1),
+.registration-table-all td:nth-child(1) {
+  width: 18%;
+}
+
+.registration-table-all th:nth-child(2),
+.registration-table-all td:nth-child(2) {
+  width: 25%;
+}
+
+.registration-table-all th:nth-child(3),
+.registration-table-all td:nth-child(3) {
+  width: 22%;
+}
+
+.registration-table-all th:nth-child(4),
+.registration-table-all td:nth-child(4) {
+  width: 15%;
+}
+
+.registration-table-all th:nth-child(5),
+.registration-table-all td:nth-child(5) {
+  width: 20%;
+  text-align: right;
+}
+
 /* ========================================
    11. Messages
    ======================================== */
@@ -985,7 +1035,8 @@ textarea:focus {
 
   .event-grid,
   .filters,
-  .event-form-grid {
+  .event-form-grid,
+  .new-venue-grid {
     grid-template-columns: 1fr;
   }
 

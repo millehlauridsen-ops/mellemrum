@@ -14,9 +14,20 @@ const initialForm = {
   description: "",
 };
 
+const initialVenueForm = {
+  name: "",
+  address: "",
+  postalcode: "",
+  city: "",
+  website: "",
+};
+
+const NEW_VENUE_VALUE = "new";
+
 export default function AddEventPage() {
   const [form, setForm] = useState(initialForm);
   const [venues, setVenues] = useState([]);
+  const [venueForm, setVenueForm] = useState(initialVenueForm);
   const [isLoadingVenues, setIsLoadingVenues] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState("");
@@ -58,6 +69,15 @@ export default function AddEventPage() {
     }));
   }
 
+  function handleVenueChange(inputEvent) {
+    const { name, value } = inputEvent.target;
+
+    setVenueForm((currentVenueForm) => ({
+      ...currentVenueForm,
+      [name]: value,
+    }));
+  }
+
   async function handleSubmit(submitEvent) {
     submitEvent.preventDefault();
 
@@ -66,19 +86,45 @@ export default function AddEventPage() {
       setMessage("");
       setError("");
 
+      let venueId = form.venueId;
+
+      if (form.venueId === NEW_VENUE_VALUE) {
+        const createdVenues = await supabaseInsert("venues", {
+          name: venueForm.name.trim(),
+          address: venueForm.address.trim(),
+          postalcode: venueForm.postalcode.trim(),
+          city: venueForm.city.trim(),
+          website: venueForm.website.trim() || null,
+        });
+
+        const createdVenue = createdVenues?.[0];
+
+        if (!createdVenue?.id) {
+          throw new Error("The new venue was created without an id.");
+        }
+
+        venueId = createdVenue.id;
+        setVenues((currentVenues) =>
+          [...currentVenues, createdVenue].sort((a, b) =>
+            a.name.localeCompare(b.name, "da"),
+          ),
+        );
+      }
+
       await supabaseInsert("events", {
         title: form.title.trim(),
         category: form.category.trim(),
         date: new Date(form.date).toISOString(),
         price: Number(form.price),
         capacity: Number(form.capacity),
-        venueId: Number(form.venueId),
+        venueId: Number(venueId),
         image: form.image.trim(),
         summary: form.summary.trim(),
         description: form.description.trim(),
       });
 
       setForm(initialForm);
+      setVenueForm(initialVenueForm);
       setMessage("Eventet er nu oprettet.");
     } catch (error) {
       console.error("Error creating event:", error);
@@ -176,8 +222,78 @@ export default function AddEventPage() {
                       {venue.name}
                     </option>
                   ))}
+
+                  <option value={NEW_VENUE_VALUE}>+ Opret ny lokation</option>
                 </select>
               </label>
+
+              {form.venueId === NEW_VENUE_VALUE && (
+                <fieldset className="new-venue-fields event-form-full-width">
+                  <legend>Ny lokation</legend>
+
+                  <div className="new-venue-grid">
+                    <label>
+                      Navn på lokation
+                      <input
+                        name="name"
+                        type="text"
+                        value={venueForm.name}
+                        onChange={handleVenueChange}
+                        placeholder="Fx Godsbanen"
+                        required
+                      />
+                    </label>
+
+                    <label>
+                      Adresse
+                      <input
+                        name="address"
+                        type="text"
+                        value={venueForm.address}
+                        onChange={handleVenueChange}
+                        placeholder="Fx Skovgaardsgade 3"
+                        required
+                      />
+                    </label>
+
+                    <label>
+                      Postnummer
+                      <input
+                        name="postalcode"
+                        type="text"
+                        inputMode="numeric"
+                        value={venueForm.postalcode}
+                        onChange={handleVenueChange}
+                        placeholder="Fx 8000"
+                        required
+                      />
+                    </label>
+
+                    <label>
+                      By
+                      <input
+                        name="city"
+                        type="text"
+                        value={venueForm.city}
+                        onChange={handleVenueChange}
+                        placeholder="Fx Aarhus C"
+                        required
+                      />
+                    </label>
+
+                    <label className="event-form-full-width">
+                      Hjemmeside (valgfri)
+                      <input
+                        name="website"
+                        type="url"
+                        value={venueForm.website}
+                        onChange={handleVenueChange}
+                        placeholder="https://..."
+                      />
+                    </label>
+                  </div>
+                </fieldset>
+              )}
 
               <label>
                 Pris i kroner
