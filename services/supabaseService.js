@@ -23,7 +23,10 @@ export async function supabaseFetch(endpoint) {
 export async function supabaseInsert(endpoint, data) {
   const response = await fetch(`${SUPABASE_URL}/${endpoint}`, {
     method: "POST",
-    headers,
+    headers: {
+      ...headers,
+      Prefer: "return=representation",
+    },
     body: JSON.stringify(data),
   });
 
@@ -31,6 +34,8 @@ export async function supabaseInsert(endpoint, data) {
     const error = await response.text();
     throw new Error(error || `Request failed: ${response.status}`);
   }
+
+  return response.json();
 }
 
 export async function supabaseUpdate(endpoint, data) {
