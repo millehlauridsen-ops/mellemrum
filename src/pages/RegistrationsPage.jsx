@@ -202,7 +202,6 @@ export default function RegistrationsPage() {
                             <th>E-mail</th>
                             <th>Tilmeldt</th>
                             <th>Status</th>
-                            <th>Handling</th>
                           </tr>
                         </thead>
 
@@ -228,41 +227,41 @@ export default function RegistrationsPage() {
                                 </td>
 
                                 <td>
-                                  <button
-                                    className={`status ${
-                                      registration.confirmed
-                                        ? "status-confirmed"
-                                        : "status-new"
-                                    }`}
-                                    type="button"
-                                    disabled={
-                                      registration.confirmed ||
-                                      isUpdating ||
-                                      isDeleting
-                                    }
-                                    onClick={() =>
-                                      confirmRegistration(registration)
-                                    }
-                                  >
-                                    {isUpdating
-                                      ? "Bekræfter..."
-                                      : registration.confirmed
-                                        ? "Bekræftet"
-                                        : "Ny"}
-                                  </button>
-                                </td>
+                                  <div className="registration-actions">
+                                    <button
+                                      className={`status ${
+                                        registration.confirmed
+                                          ? "status-confirmed"
+                                          : "status-new"
+                                      }`}
+                                      type="button"
+                                      disabled={
+                                        registration.confirmed ||
+                                        isUpdating ||
+                                        isDeleting
+                                      }
+                                      onClick={() =>
+                                        confirmRegistration(registration)
+                                      }
+                                    >
+                                      {isUpdating
+                                        ? "Bekræfter..."
+                                        : registration.confirmed
+                                          ? "Bekræftet"
+                                          : "Ny"}
+                                    </button>
 
-                                <td>
-                                  <button
-                                    className="delete-button"
-                                    type="button"
-                                    disabled={isDeleting || isUpdating}
-                                    onClick={() =>
-                                      deleteRegistration(registration)
-                                    }
-                                  >
-                                    {isDeleting ? "Sletter..." : "Slet"}
-                                  </button>
+                                    <button
+                                      className="delete-button"
+                                      type="button"
+                                      disabled={isDeleting || isUpdating}
+                                      onClick={() =>
+                                        deleteRegistration(registration)
+                                      }
+                                    >
+                                      {isDeleting ? "Sletter..." : "Slet"}
+                                    </button>
+                                  </div>
                                 </td>
                               </tr>
                             );
