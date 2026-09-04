@@ -47,10 +47,24 @@ export default function RegistrationsPage() {
     0,
   );
 
-  const visibleEvents =
-    selectedEventId === "all"
-      ? events
-      : events.filter((event) => String(event.id) === selectedEventId);
+  const selectedEvent = events.find(
+    (event) => String(event.id) === selectedEventId,
+  );
+
+  const allRegistrations = events
+    .flatMap((event) =>
+      (event.registrations ?? []).map((registration) => ({
+        ...registration,
+        eventTitle: event.title,
+      })),
+    )
+    .sort((a, b) => {
+      const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+
+      const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+
+      return dateB - dateA;
+    });
 
   async function confirmRegistration(registration) {
     if (registration.confirmed) {
@@ -71,7 +85,7 @@ export default function RegistrationsPage() {
       setEvents((currentEvents) =>
         currentEvents.map((event) => ({
           ...event,
-          registrations: event.registrations.map((item) =>
+          registrations: (event.registrations ?? []).map((item) =>
             item.id === registration.id ? { ...item, confirmed: true } : item,
           ),
         })),
@@ -104,7 +118,7 @@ export default function RegistrationsPage() {
       setEvents((currentEvents) =>
         currentEvents.map((event) => ({
           ...event,
-          registrations: event.registrations.filter(
+          registrations: (event.registrations ?? []).filter(
             (item) => item.id !== registration.id,
           ),
         })),
@@ -124,6 +138,96 @@ export default function RegistrationsPage() {
       month: "long",
       year: "numeric",
     });
+  }
+
+  function renderRegistrationTable(registrations, showEventColumn = false) {
+    if (registrations.length === 0) {
+      return (
+        <p className="no-registrations">Der er endnu ingen tilmeldinger.</p>
+      );
+    }
+
+    return (
+      <div className="registration-table-wrapper">
+        <table
+          className={`registration-table ${
+            showEventColumn ? "registration-table-all" : ""
+          }`}
+        >
+          <thead>
+            <tr>
+              <th>Navn</th>
+              <th>E-mail</th>
+
+              {showEventColumn && <th>Event</th>}
+
+              <th>Tilmeldt</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {registrations.map((registration) => {
+              const isUpdating = updatingId === registration.id;
+
+              const isDeleting = deletingId === registration.id;
+
+              return (
+                <tr key={registration.id}>
+                  <td>
+                    <strong>{registration.name}</strong>
+                  </td>
+
+                  <td>{registration.email}</td>
+
+                  {showEventColumn && <td>{registration.eventTitle}</td>}
+
+                  <td>
+                    {registration.createdAt
+                      ? new Date(registration.createdAt).toLocaleDateString(
+                          "da-DK",
+                        )
+                      : "–"}
+                  </td>
+
+                  <td>
+                    <div className="registration-actions">
+                      <button
+                        className={`status ${
+                          registration.confirmed
+                            ? "status-confirmed"
+                            : "status-new"
+                        }`}
+                        type="button"
+                        disabled={
+                          registration.confirmed || isUpdating || isDeleting
+                        }
+                        onClick={() => confirmRegistration(registration)}
+                      >
+                        {isUpdating
+                          ? "Bekræfter..."
+                          : registration.confirmed
+                            ? "Bekræftet"
+                            : "Ny"}
+                      </button>
+
+                      <button
+                        className="delete-button"
+                        type="button"
+                        disabled={isDeleting || isUpdating}
+                        onClick={() => deleteRegistration(registration)}
+                      >
+                        {isDeleting ? "Sletter..." : "Slet"}
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    );
   }
 
   return (
@@ -167,112 +271,50 @@ export default function RegistrationsPage() {
               </select>
             </section>
 
-            {visibleEvents.map((event) => {
-              const registrations = event.registrations ?? [];
+            {selectedEventId === "all" ? (
+              <section className="event-registration-section">
+                <div className="event-registration-heading">
+                  <div>
+                    <p className="eyebrow dark">Alle events</p>
 
-              return (
-                <section className="event-registration-section" key={event.id}>
+                    <h2>Alle tilmeldinger</h2>
+                  </div>
+
+                  <p>
+                    {allRegistrations.length}{" "}
+                    {allRegistrations.length === 1
+                      ? "tilmelding"
+                      : "tilmeldinger"}
+                  </p>
+                </div>
+
+                {renderRegistrationTable(allRegistrations, true)}
+              </section>
+            ) : (
+              selectedEvent && (
+                <section className="event-registration-section">
                   <div className="event-registration-heading">
                     <div>
                       <p className="eyebrow dark">Event</p>
-                      <h2>{event.title}</h2>
+                      <h2>{selectedEvent.title}</h2>
                     </div>
 
                     <div>
-                      <p>{formatEventDate(event.date)}</p>
+                      <p>{formatEventDate(selectedEvent.date)}</p>
+
                       <p>
-                        {registrations.length}{" "}
-                        {registrations.length === 1
+                        {selectedEvent.registrations?.length ?? 0}{" "}
+                        {(selectedEvent.registrations?.length ?? 0) === 1
                           ? "tilmelding"
                           : "tilmeldinger"}
                       </p>
                     </div>
                   </div>
 
-                  {registrations.length === 0 ? (
-                    <p className="no-registrations">
-                      Der er endnu ingen tilmeldinger til dette event.
-                    </p>
-                  ) : (
-                    <div className="registration-table-wrapper">
-                      <table className="registration-table">
-                        <thead>
-                          <tr>
-                            <th>Navn</th>
-                            <th>E-mail</th>
-                            <th>Tilmeldt</th>
-                            <th>Status</th>
-                          </tr>
-                        </thead>
-
-                        <tbody>
-                          {registrations.map((registration) => {
-                            const isUpdating = updatingId === registration.id;
-                            const isDeleting = deletingId === registration.id;
-
-                            return (
-                              <tr key={registration.id}>
-                                <td>
-                                  <strong>{registration.name}</strong>
-                                </td>
-
-                                <td>{registration.email}</td>
-
-                                <td>
-                                  {registration.createdAt
-                                    ? new Date(
-                                        registration.createdAt,
-                                      ).toLocaleDateString("da-DK")
-                                    : "–"}
-                                </td>
-
-                                <td>
-                                  <div className="registration-actions">
-                                    <button
-                                      className={`status ${
-                                        registration.confirmed
-                                          ? "status-confirmed"
-                                          : "status-new"
-                                      }`}
-                                      type="button"
-                                      disabled={
-                                        registration.confirmed ||
-                                        isUpdating ||
-                                        isDeleting
-                                      }
-                                      onClick={() =>
-                                        confirmRegistration(registration)
-                                      }
-                                    >
-                                      {isUpdating
-                                        ? "Bekræfter..."
-                                        : registration.confirmed
-                                          ? "Bekræftet"
-                                          : "Ny"}
-                                    </button>
-
-                                    <button
-                                      className="delete-button"
-                                      type="button"
-                                      disabled={isDeleting || isUpdating}
-                                      onClick={() =>
-                                        deleteRegistration(registration)
-                                      }
-                                    >
-                                      {isDeleting ? "Sletter..." : "Slet"}
-                                    </button>
-                                  </div>
-                                </td>
-                              </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
+                  {renderRegistrationTable(selectedEvent.registrations ?? [])}
                 </section>
-              );
-            })}
+              )
+            )}
           </>
         )}
       </main>

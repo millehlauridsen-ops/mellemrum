@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { supabaseInsert } from "../../services/supabaseService";
 
-export default function RegistrationForm({ event }) {
+export default function RegistrationForm({
+  event,
+  isFull,
+  onRegistrationSuccess,
+}) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
@@ -9,6 +13,11 @@ export default function RegistrationForm({ event }) {
 
   async function handleSubmit(eventSubmit) {
     eventSubmit.preventDefault();
+
+    if (isFull) {
+      setMessage("Eventet er desværre fyldt.");
+      return;
+    }
 
     setIsSubmitting(true);
     setMessage("");
@@ -24,6 +33,7 @@ export default function RegistrationForm({ event }) {
       setName("");
       setEmail("");
       setMessage("Du er nu tilmeldt eventet.");
+      onRegistrationSuccess?.();
     } catch (error) {
       console.error("Error submitting form:", error);
       setMessage("Tilmeldingen kunne ikke gennemføres. Prøv igen.");
@@ -36,8 +46,12 @@ export default function RegistrationForm({ event }) {
     <section className="signup-panel">
       <div>
         <p className="eyebrow dark">Tilmelding</p>
-        <h2>Reserver din plads</h2>
-        <p>Udfyld formularen, så sender vi din tilmelding til arrangøren.</p>
+        <h2>{isFull ? "Eventet er fyldt" : "Reserver din plads"}</h2>
+        <p>
+          {isFull
+            ? "Der er desværre ikke flere ledige pladser til dette event."
+            : "Udfyld formularen, så sender vi din tilmelding til arrangøren."}
+        </p>
       </div>
 
       <form onSubmit={handleSubmit}>
@@ -48,6 +62,7 @@ export default function RegistrationForm({ event }) {
             value={name}
             onChange={(inputEvent) => setName(inputEvent.target.value)}
             placeholder="Dit navn"
+            disabled={isFull}
             required
           />
         </label>
@@ -59,12 +74,17 @@ export default function RegistrationForm({ event }) {
             value={email}
             onChange={(inputEvent) => setEmail(inputEvent.target.value)}
             placeholder="dig@example.com"
+            disabled={isFull}
             required
           />
         </label>
 
-        <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Sender..." : "Tilmeld mig"}
+        <button type="submit" disabled={isSubmitting || isFull}>
+          {isFull
+            ? "Ingen ledige pladser"
+            : isSubmitting
+              ? "Sender..."
+              : "Tilmeld mig"}
         </button>
 
         {message && <p>{message}</p>}

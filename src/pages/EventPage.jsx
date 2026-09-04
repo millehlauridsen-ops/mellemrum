@@ -8,6 +8,7 @@ export default function EventPage() {
   const { eventId } = useParams();
 
   const [event, setEvent] = useState(null);
+  const [registrationCount, setRegistrationCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -26,7 +27,7 @@ export default function EventPage() {
         setError("");
 
         const data = await supabaseFetch(
-          `events?id=eq.${eventId}&select=*,venue:venues(id,name,address,postalcode,city,website)`,
+          `events?id=eq.${eventId}&select=*,venue:venues(id,name,address,postalcode,city,website),registrations(id)`,
         );
 
         if (!data.length) {
@@ -35,6 +36,7 @@ export default function EventPage() {
         }
 
         setEvent(data[0]);
+        setRegistrationCount(data[0].registrations?.length ?? 0);
       } catch (error) {
         console.error("Error loading event:", error);
         setError("Vi kunne desværre ikke hente eventet. Prøv igen senere.");
@@ -74,6 +76,9 @@ export default function EventPage() {
   }
 
   const date = new Date(event.date);
+  const capacity = event.capacity ?? 0;
+  const availableSpots = Math.max(capacity - registrationCount, 0);
+  const isFull = availableSpots === 0;
 
   return (
     <>
@@ -83,17 +88,14 @@ export default function EventPage() {
         </Link>
 
         <section className="event-detail">
-          <img
-            ref={headingRef}
-            tabIndex={-1}
-            src={event.image}
-            alt={event.title}
-          />
+          <img src={event.image} alt={event.title} />
 
           <div className="event-detail-content">
             <p className="event-category">{event.category}</p>
 
-            <h1>{event.title}</h1>
+            <h1 ref={headingRef} tabIndex={-1}>
+              {event.title}
+            </h1>
 
             <p className="lead">{event.summary}</p>
 
@@ -151,13 +153,28 @@ export default function EventPage() {
                 <strong>Pris</strong>
                 {event.price === 0 ? "Gratis" : `${event.price} kr.`}
               </p>
+
+              <p>
+                <strong>Pladser</strong>
+                <span
+                  className={isFull ? "capacity-full" : "capacity-available"}
+                >
+                  {availableSpots} ud af {capacity} pladser tilbage
+                </span>
+              </p>
             </div>
 
             <p>{event.description}</p>
           </div>
         </section>
 
-        <RegistrationForm event={event} />
+        <RegistrationForm
+          event={event}
+          isFull={isFull}
+          onRegistrationSuccess={() =>
+            setRegistrationCount((currentCount) => currentCount + 1)
+          }
+        />
       </main>
 
       <Footer />
