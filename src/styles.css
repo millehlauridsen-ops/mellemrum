@@ -762,3 +762,107 @@ select:focus {
   color: #555;
   background-color: #f3f0ea;
 }
+
+.event-registration-section {
+  margin-bottom: 3rem;
+  padding: 2rem;
+  background: #fff;
+  border: 1px solid #dedbd3;
+  border-radius: 1rem;
+}
+
+.event-registration-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  align-items: flex-end;
+  margin-bottom: 1.5rem;
+}
+
+.event-registration-heading h2,
+.event-registration-heading p {
+  margin: 0;
+}
+
+.event-registration-heading > div:last-child {
+  text-align: right;
+}
+
+.registration-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.registration-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.registration-table th,
+.registration-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #dedbd3;
+}
+
+.registration-table th {
+  font-size: 0.75rem;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.registration-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.no-registrations {
+  margin: 0;
+  padding: 1.5rem;
+  background: #f5f2eb;
+  border-radius: 0.75rem;
+}
+
+@media (max-width: 700px) {
+  .event-registration-section {
+    padding: 1.25rem;
+  }
+
+  .event-registration-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .event-registration-heading > div:last-child {
+    text-align: left;
+  }
+
+  .registration-table {
+    min-width: 700px;
+  }
+}
+
+.registration-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: min(100%, 400px);
+  margin-bottom: 2rem;
+}
+
+.registration-filter label {
+  font-size: 0.8rem;
+  font-weight: 750;
+}
+
+.registration-filter select {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  color: #222;
+  background: #fff;
+  border: 1px solid #c9c5bc;
+  border-radius: 0.75rem;
+  font: inherit;
+  cursor: pointer;
+}

@@ -17,9 +17,8 @@ export default function RegistrationForm({ event }) {
       await supabaseInsert("registrations", {
         name,
         email,
-        eventTitle: event.title,
-        eventDate: event.date,
-        eventLocation: event.venueName,
+        eventId: event.id,
+        confirmed: false,
       });
 
       setName("");

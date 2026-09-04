@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Footer from "../components/Footer";
 import {
   supabaseDelete,
@@ -7,29 +7,50 @@ import {
 } from "../../services/supabaseService";
 
 export default function RegistrationsPage() {
-  const [registrations, setRegistrations] = useState([]);
-  const [registrationCount, setRegistrationCount] = useState(0);
+  const [events, setEvents] = useState([]);
+  const [selectedEventId, setSelectedEventId] = useState("all");
+  const [isLoading, setIsLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [error, setError] = useState("");
 
+  const headingRef = useRef(null);
+
   useEffect(() => {
-    async function getRegistrations() {
+    headingRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    async function getEventsWithRegistrations() {
       try {
+        setIsLoading(true);
         setError("");
 
-        const data = await supabaseFetch("registrations?order=createdAt.desc");
+        const data = await supabaseFetch(
+          "events?select=id,title,date,registrations(id,name,email,confirmed,createdAt)&order=date.asc&registrations.order=createdAt.desc",
+        );
 
-        setRegistrations(data);
-        setRegistrationCount(data.length);
+        setEvents(data);
       } catch (error) {
         console.error("Error loading registrations:", error);
         setError("Tilmeldingerne kunne ikke hentes.");
+      } finally {
+        setIsLoading(false);
       }
     }
 
-    getRegistrations();
+    getEventsWithRegistrations();
   }, []);
+
+  const registrationCount = events.reduce(
+    (total, event) => total + (event.registrations?.length ?? 0),
+    0,
+  );
+
+  const visibleEvents =
+    selectedEventId === "all"
+      ? events
+      : events.filter((event) => String(event.id) === selectedEventId);
 
   async function confirmRegistration(registration) {
     if (registration.confirmed) {
@@ -47,10 +68,13 @@ export default function RegistrationsPage() {
         },
       );
 
-      setRegistrations((currentRegistrations) =>
-        currentRegistrations.map((item) =>
-          item.id === registration.id ? { ...item, confirmed: true } : item,
-        ),
+      setEvents((currentEvents) =>
+        currentEvents.map((event) => ({
+          ...event,
+          registrations: event.registrations.map((item) =>
+            item.id === registration.id ? { ...item, confirmed: true } : item,
+          ),
+        })),
       );
     } catch (error) {
       console.error("Error confirming registration:", error);
@@ -77,11 +101,14 @@ export default function RegistrationsPage() {
         `registrations?id=eq.${encodeURIComponent(registration.id)}`,
       );
 
-      setRegistrations((currentRegistrations) =>
-        currentRegistrations.filter((item) => item.id !== registration.id),
+      setEvents((currentEvents) =>
+        currentEvents.map((event) => ({
+          ...event,
+          registrations: event.registrations.filter(
+            (item) => item.id !== registration.id,
+          ),
+        })),
       );
-
-      setRegistrationCount((currentCount) => Math.max(0, currentCount - 1));
     } catch (error) {
       console.error("Error deleting registration:", error);
       setError("Tilmeldingen kunne ikke slettes. Prøv igen.");
@@ -90,73 +117,165 @@ export default function RegistrationsPage() {
     }
   }
 
+  function formatEventDate(eventDate) {
+    return new Date(eventDate).toLocaleDateString("da-DK", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  }
+
   return (
     <>
       <header className="admin-header">
         <p className="eyebrow">Internt overblik</p>
-        <h1>Tilmeldinger</h1>
+
+        <h1 ref={headingRef} tabIndex={-1}>
+          Tilmeldinger
+        </h1>
+
         <p>{registrationCount} tilmeldinger i alt</p>
       </header>
 
       <main>
+        {isLoading && <p className="status-message">Henter tilmeldinger...</p>}
+
         {error && (
           <div className="error-message" role="alert">
             <p>{error}</p>
           </div>
         )}
 
-        <div className="registration-list">
-          <div className="registration-list-row registration-labels">
-            <span>Navn</span>
-            <span>Event</span>
-            <span>Dato</span>
-            <span>Status</span>
-          </div>
+        {!isLoading && !error && (
+          <>
+            <section className="registration-filter">
+              <label htmlFor="event-filter">Vis tilmeldinger for</label>
 
-          {registrations.map((registration) => {
-            const isUpdating = updatingId === registration.id;
-            const isDeleting = deletingId === registration.id;
+              <select
+                id="event-filter"
+                value={selectedEventId}
+                onChange={(event) => setSelectedEventId(event.target.value)}
+              >
+                <option value="all">Alle events</option>
 
-            return (
-              <div className="registration-row" key={registration.id}>
-                <div>
-                  <strong>{registration.name}</strong>
-                  <small>{registration.email}</small>
-                </div>
+                {events.map((event) => (
+                  <option key={event.id} value={String(event.id)}>
+                    {event.title}
+                  </option>
+                ))}
+              </select>
+            </section>
 
-                <span>{registration.eventTitle}</span>
+            {visibleEvents.map((event) => {
+              const registrations = event.registrations ?? [];
 
-                <span>
-                  {new Date(registration.eventDate).toLocaleDateString("da-DK")}
-                </span>
+              return (
+                <section className="event-registration-section" key={event.id}>
+                  <div className="event-registration-heading">
+                    <div>
+                      <p className="eyebrow dark">Event</p>
+                      <h2>{event.title}</h2>
+                    </div>
 
-                <button
-                  className={`status ${
-                    registration.confirmed ? "status-confirmed" : "status-new"
-                  }`}
-                  type="button"
-                  disabled={registration.confirmed || isUpdating || isDeleting}
-                  onClick={() => confirmRegistration(registration)}
-                >
-                  {isUpdating
-                    ? "Bekræfter..."
-                    : registration.confirmed
-                      ? "Bekræftet"
-                      : "Ny"}
-                </button>
+                    <div>
+                      <p>{formatEventDate(event.date)}</p>
+                      <p>
+                        {registrations.length}{" "}
+                        {registrations.length === 1
+                          ? "tilmelding"
+                          : "tilmeldinger"}
+                      </p>
+                    </div>
+                  </div>
 
-                <button
-                  className="delete-button"
-                  type="button"
-                  disabled={isDeleting || isUpdating}
-                  onClick={() => deleteRegistration(registration)}
-                >
-                  {isDeleting ? "Sletter..." : "Slet"}
-                </button>
-              </div>
-            );
-          })}
-        </div>
+                  {registrations.length === 0 ? (
+                    <p className="no-registrations">
+                      Der er endnu ingen tilmeldinger til dette event.
+                    </p>
+                  ) : (
+                    <div className="registration-table-wrapper">
+                      <table className="registration-table">
+                        <thead>
+                          <tr>
+                            <th>Navn</th>
+                            <th>E-mail</th>
+                            <th>Tilmeldt</th>
+                            <th>Status</th>
+                            <th>Handling</th>
+                          </tr>
+                        </thead>
+
+                        <tbody>
+                          {registrations.map((registration) => {
+                            const isUpdating = updatingId === registration.id;
+                            const isDeleting = deletingId === registration.id;
+
+                            return (
+                              <tr key={registration.id}>
+                                <td>
+                                  <strong>{registration.name}</strong>
+                                </td>
+
+                                <td>{registration.email}</td>
+
+                                <td>
+                                  {registration.createdAt
+                                    ? new Date(
+                                        registration.createdAt,
+                                      ).toLocaleDateString("da-DK")
+                                    : "–"}
+                                </td>
+
+                                <td>
+                                  <button
+                                    className={`status ${
+                                      registration.confirmed
+                                        ? "status-confirmed"
+                                        : "status-new"
+                                    }`}
+                                    type="button"
+                                    disabled={
+                                      registration.confirmed ||
+                                      isUpdating ||
+                                      isDeleting
+                                    }
+                                    onClick={() =>
+                                      confirmRegistration(registration)
+                                    }
+                                  >
+                                    {isUpdating
+                                      ? "Bekræfter..."
+                                      : registration.confirmed
+                                        ? "Bekræftet"
+                                        : "Ny"}
+                                  </button>
+                                </td>
+
+                                <td>
+                                  <button
+                                    className="delete-button"
+                                    type="button"
+                                    disabled={isDeleting || isUpdating}
+                                    onClick={() =>
+                                      deleteRegistration(registration)
+                                    }
+                                  >
+                                    {isDeleting ? "Sletter..." : "Slet"}
+                                  </button>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </section>
+              );
+            })}
+          </>
+        )}
       </main>
 
       <Footer />
