@@ -683,32 +683,6 @@ select:focus {
   border-radius: 0.75rem;
 }
 
-.registration-table-all th:nth-child(1),
-.registration-table-all td:nth-child(1) {
-  width: 18%;
-}
-
-.registration-table-all th:nth-child(2),
-.registration-table-all td:nth-child(2) {
-  width: 25%;
-}
-
-.registration-table-all th:nth-child(3),
-.registration-table-all td:nth-child(3) {
-  width: 22%;
-}
-
-.registration-table-all th:nth-child(4),
-.registration-table-all td:nth-child(4) {
-  width: 15%;
-}
-
-.registration-table-all th:nth-child(5),
-.registration-table-all td:nth-child(5) {
-  width: 20%;
-  text-align: right;
-}
-
 /* ========================================
    11. Messages
    ======================================== */
