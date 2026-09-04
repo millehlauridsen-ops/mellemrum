@@ -53,7 +53,8 @@ a {
 
 button,
 input,
-select {
+select,
+textarea {
   font: inherit;
 }
 
@@ -171,7 +172,8 @@ main {
    ======================================== */
 
 input,
-select {
+select,
+textarea {
   min-height: 48px;
   padding: 0.75rem 0.9rem;
   color: var(--ink);
@@ -184,7 +186,8 @@ select {
 }
 
 input:focus,
-select:focus {
+select:focus,
+textarea:focus {
   outline: none;
   border-color: var(--green);
   box-shadow: 0 0 0 3px rgba(23, 63, 53, 0.12);
@@ -506,6 +509,102 @@ select:focus {
   margin: 0.5rem 0 0;
   padding: 0.8rem;
   background: rgba(255, 255, 255, 0.55);
+}
+
+/* ========================================
+   Event creation form
+   ======================================== */
+
+.event-form-page {
+  max-width: 1000px;
+}
+
+.event-form-panel {
+  padding: clamp(1.5rem, 4vw, 3rem);
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+}
+
+.event-form-intro {
+  max-width: 42rem;
+  margin-bottom: 2rem;
+}
+
+.event-form-intro h2 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.event-form {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.event-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.event-form label {
+  display: grid;
+  gap: 0.45rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.event-form textarea {
+  width: 100%;
+  padding: 0.85rem 0.9rem;
+  color: var(--ink);
+  resize: vertical;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.event-form-full-width {
+  grid-column: 1 / -1;
+}
+
+.event-form-submit {
+  justify-self: start;
+  min-height: 50px;
+  padding: 0.8rem 1.4rem;
+  color: white;
+  font-weight: 800;
+  cursor: pointer;
+  background: var(--green);
+  border: 0;
+  border-radius: 999px;
+}
+
+.event-form-submit:hover {
+  background: #205548;
+}
+
+.event-form-submit:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.success-message {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  color: #245b24;
+  background: #dff3cc;
+  border: 1px solid #b8dda7;
+  border-radius: 12px;
+}
+
+.success-message p {
+  margin: 0;
 }
 
 /* ========================================
@@ -885,8 +984,13 @@ select:focus {
   }
 
   .event-grid,
-  .filters {
+  .filters,
+  .event-form-grid {
     grid-template-columns: 1fr;
+  }
+
+  .event-form-full-width {
+    grid-column: auto;
   }
 
   .site-footer {
